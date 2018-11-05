@@ -2,12 +2,12 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
 %SigmaTransform1D 1D Continuous SigmaTransform	
 %   USAGE: [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , action, detinvsigma )
 %	INPUT:
-%		f	    : sig - or "0", to indicate calculation of windows, only
-%		psi	    : waveletfunc, in the warped domain
-%		steps	: vector of steps to analyze in warped domain, or numsteps
-%		sigma	: diffeomorphism as a function
-%		wFs	    : Samplingfrequency, if known, or FourierAxis
-%		action	: translation action (optional, uses abelian by default)
+%		f       : sig - or "0", to indicate calculation of windows, only
+%		psi     : waveletfunc, in the warped domain
+%		steps   : vector of steps to analyze in warped domain, or numsteps
+%		sigma   : diffeomorphism as a function
+%		wFs     : Samplingfrequency, if known, or FourierAxis
+%		action  : translation action (optional, uses abelian by default)
 %		detinv. : determinant of jacobian of inverse of diffeomorphism
 %	OUTPUT:
 %		out     : struct, containing W_psi f
