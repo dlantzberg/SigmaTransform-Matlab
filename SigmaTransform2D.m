@@ -2,8 +2,8 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
 %SigmaTransform2D 2D Continuous SigmaTransform,	
 %   USAGE: [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX , sigmaY , wFsx , wFsy, actX, actY , detinvsigma )
 %	INPUT:
-%		f			: sig
-%		psi			: wavelet; same size as sig; centerfreq & time at first index
+%		f           : sig
+%		psi         : wavelet; same size as sig; centerfreq & time at first index
 %		X/Ystep		: 1-D vectors of steps in warped domain (or numsteps)
 %		sigmaX/Y	: diffeomorphism as 2Dfunctions
 %		wFs_x/y		: Samplingfrequency, if known
@@ -16,13 +16,13 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
 %	AUTHOR:	D Lantzberg, Okt. 2016
 
 	% config
-	lensteps			= length( Xsteps );
+	lensteps = length( Xsteps );
 	
 	if( lensteps ~= length(Ysteps) ),
-		error('Stepvectors have different length');
+	    error('Stepvectors have different length');
 	end;
 	
-	[height,width]		= size( f );
+	[height,width] = size( f );
 	
     % Fourier domain provided or shall it be created?
 	if(~exist('wFsx','var') || ~exist('wFsy','var') )
@@ -33,7 +33,7 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
 		warning('creating axis..');
         x = FourierAxis( wFsx , width );
         y = FourierAxis( wFsy , height );
-		[WX,WY]		= meshgrid( x , y );
+		[WX,WY]	= meshgrid( x , y );
 	else
 		WX = wFsx;
 		WY = wFsy;
@@ -101,11 +101,9 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
 	if( scale == 1 ),
 		deter			= detinvsigma(2-Xsteps , 2-Ysteps )./detinvsigma(2,2);
 		PSIs			= bsxfun( @times , deter.^.5 , PSIs );
-		PSIFactor		= sum( sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 1 ) , 1 );
-        Mask            =      sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 3 );
+        Mask            = sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 3 );
 	else
 		deter			= ones(size(Xsteps));
-		PSIFactor		= ones(size(Xsteps));
         Mask            = sum( abs(PSIs).^2 , 3 );
 	end;
     
