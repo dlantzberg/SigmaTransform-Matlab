@@ -2,11 +2,11 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
 %SigmaTransform1D 1D Continuous SigmaTransform	
 %   USAGE: [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , action, detinvsigma )
 %	INPUT:
-%		f	: sig - or "0", to indicate calculation of windows, only
-%		psi	: waveletfunc, in the warped domain
+%		f	    : sig - or "0", to indicate calculation of windows, only
+%		psi	    : waveletfunc, in the warped domain
 %		steps	: vector of steps to analyze in warped domain, or numsteps
 %		sigma	: diffeomorphism as a function
-%		wFs	: Samplingfrequency, if known, or FourierAxis
+%		wFs	    : Samplingfrequency, if known, or FourierAxis
 %		action	: translation action (optional, uses abelian by default)
 %		detinv. : determinant of jacobian of inverse of diffeomorphism
 %	OUTPUT:
@@ -19,7 +19,7 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
 	lensteps	= length( steps );
 	lenf        = length( f );
 	
-	%%%ERRORCHECKING
+	% ERRORCHECKING
 	if~exist('detinvsigma','var')
 		scale = 0;
         detinvsigma = @(x) 1;
@@ -68,13 +68,13 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
 
         %scaling? -> takes time
         if( scale == 1 )
-            deter       = detinvsigma(w);
-            %deter       = bsxfun(@rdivide,detinvsigma(w),detinvsigma(vars));
-            PSIs	=      bsxfun( @times , deter.^.5 , PSIs );
-            Mask        = sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 1);
+            deter   = detinvsigma(w);
+            %deter  = bsxfun(@rdivide,detinvsigma(w),detinvsigma(vars));
+            PSIs    =      bsxfun( @times , deter.^.5 , PSIs );
+            Mask    = sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 1);
         else
-            deter	= ones(size(steps(:)));
-            Mask        = sum( abs(PSIs).^2 , 1);
+            deter   = ones(size(steps(:)));
+            Mask    = sum( abs(PSIs).^2 , 1);
         end;
         
         % irrelevant
@@ -101,10 +101,10 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         % number of sample-points
         if( lensteps == 1 ) 
             lensteps = steps;
-            steps = linspace( min(sigmaw) , max(sigmaw) , lensteps-4 );
+            steps    = linspace( min(sigmaw) , max(sigmaw) , lensteps-4 );
             stepsize = steps(2)-steps(1);
-            steps = [ steps(1)-stepsize*2, steps(1)-stepsize , steps , ...
-                      steps(end)+stepsize , steps(end)+stepsize*2 ];
+            steps    = [ steps(1)-stepsize*2, steps(1)-stepsize , steps , ...
+                         steps(end)+stepsize , steps(end)+stepsize*2 ];
         end;		
         steps   = reshape( steps , [] , 1  );	
         
@@ -140,12 +140,12 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         resid = ifft( F .* ( 1 - (Mask>eps) ) );
     end;
 	out  = struct( ...
-        'coeff'			, FF, ...               % transform coefficients
-        'PSIs'			, PSIs , ...            % spectra of the windows
-        'psi_hat'		, psi,	...             % function handle of window in warped Fourier domain
-        'omega'			, w , ...               % the Fourier domain vector
-        'steps'			, steps , ...           % used steps in warped domain
-        'sigma'			, sigma, ...            % function handle of the spectral diffeomorphism
+        'coeff'			    , FF, ...               % transform coefficients
+        'PSIs'			    , PSIs , ...            % spectra of the windows
+        'psi_hat'		    , psi,	...             % function handle of window in warped Fourier domain
+        'omega'			    , w , ...               % the Fourier domain vector
+        'steps'			    , steps , ...           % used steps in warped domain
+        'sigma'			    , sigma, ...            % function handle of the spectral diffeomorphism
         'warpFactors'   	, deter, ...            % weighting factors
         'FourierMask'   	, Mask , ...            % sum of the squared spectra of the windows
         'residuum'      	, resid,  ...           % residuum (part of the signal which is lost due to missing windows)
