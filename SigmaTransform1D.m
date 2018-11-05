@@ -1,59 +1,59 @@
 function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , action , detinvsigma )
-%SigmaTransform1D 1D Continuous SigmaTransform	
+%SigmaTransform1D 1D Continuous SigmaTransform  
 %   USAGE: [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , action, detinvsigma )
-%	INPUT:
-%		f       : sig - or "0", to indicate calculation of windows, only
-%		psi     : waveletfunc, in the warped domain
-%		steps   : vector of steps to analyze in warped domain, or numsteps
-%		sigma   : diffeomorphism as a function
-%		wFs     : Samplingfrequency, if known, or FourierAxis
-%		action  : translation action (optional, uses abelian by default)
-%		detinv. : determinant of jacobian of inverse of diffeomorphism
-%	OUTPUT:
-%		out     : struct, containing W_psi f
-%		[PSIs]	: [optional mat of fourier transforms of "scaled wavelets" ]
+%   INPUT:
+%       f       : sig - or "0", to indicate calculation of windows, only
+%       psi     : waveletfunc, in the warped domain
+%       steps   : vector of steps to analyze in warped domain, or numsteps
+%       sigma   : diffeomorphism as a function
+%       wFs     : Samplingfrequency, if known, or FourierAxis
+%       action  : translation action (optional, uses abelian by default)
+%       detinv. : determinant of jacobian of inverse of diffeomorphism
+%   OUTPUT:
+%       out     : struct, containing W_psi f
+%       [PSIs]  : [optional mat of fourier transforms of "scaled wavelets" ]
 %
-%	AUTHOR:	Daniel Lantzberg, Okt. 2016
+%   AUTHOR: Daniel Lantzberg, Okt. 2016
 
-	% config
-	lensteps	= length( steps );
-	lenf        = length( f );
-	
-	% ERRORCHECKING
-	if~exist('detinvsigma','var')
-		scale = 0;
+    % config
+    lensteps    = length( steps );
+    lenf        = length( f );
+    
+    % ERRORCHECKING
+    if~exist('detinvsigma','var')
+        scale = 0;
         detinvsigma = @(x) 1;
     else 
         scale = 1;
-	end;
-	
-	if~exist('wFs' , 'var')
-		%warning('no axis given - using axis -1:1');
+    end;
+    
+    if~exist('wFs' , 'var')
+        %warning('no axis given - using axis -1:1');
         wFs = lenf/2;
-	end;
-	    
+    end;
+        
     if~exist('action','var')
         % if no action given -> use abelian structure
-		%warning('no action given - using abelian action');
-		action = @(x,xp) x - xp;
+        %warning('no action given - using abelian action');
+        action = @(x,xp) x - xp;
     end;
 
-	% signal given?
-    if( lenf == 1 ) % get PSIs only		    
+    % signal given?
+    if( lenf == 1 ) % get PSIs only         
         
         if( length(wFs) == 1 )
             error('without signal, axis is needed');
         end;
 
-        w       = reshape( wFs    , 1  , [] );	
+        w       = reshape( wFs    , 1  , [] );  
         sigmaw  = sigma(w);
 
         % number of sample-points
         if( lensteps == 1 ) 
             lensteps = steps;
             steps = linspace( min(sigmaw) , max(sigmaw) , lensteps );
-        end;	
-        steps   = reshape( steps , [] , 1  );	
+        end;    
+        steps   = reshape( steps , [] , 1  );   
         
         if(~isa(psi,'function_handle') )
             % if no function handle is given: use warped Gaussian of
@@ -93,7 +93,7 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         f(isnan(f)) = 0;
         
         % make axes
-        w       = reshape( wFs    , 1  , [] );	
+        w       = reshape( wFs    , 1  , [] );  
         sigmaw  = sigma(w);
         % make infinity huge, but finite
         sigmaw( isinf(sigmaw) ) = .01/eps;
@@ -105,8 +105,8 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
             stepsize = steps(2)-steps(1);
             steps    = [ steps(1)-stepsize*2, steps(1)-stepsize , steps , ...
                          steps(end)+stepsize , steps(end)+stepsize*2 ];
-        end;		
-        steps   = reshape( steps , [] , 1  );	
+        end;        
+        steps   = reshape( steps , [] , 1  );   
         
         if(~isa(psi,'function_handle') )
             % if no function handle is given: use warped Gaussian of
@@ -116,7 +116,7 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         end;
         
         % make windows
-        vars    = bsxfun( action , sigmaw , steps );		
+        vars    = bsxfun( action , sigmaw , steps );        
         PSIs    = psi( vars );    
         PSIs(isnan(PSIs)) = 0;  
         
@@ -126,10 +126,10 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         % Very slow
         if( scale == 1 )
             deter       = bsxfun(@rdivide,detinvsigma(w),detinvsigma(vars));
-            PSIs		=      bsxfun( @times , deter.^.5 , PSIs );
+            PSIs        =      bsxfun( @times , deter.^.5 , PSIs );
             Mask        = sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 1);
         else
-            deter		= eye(size(vars));
+            deter       = eye(size(vars));
             Mask        = sum( abs(PSIs).^2 , 1);
         end;
 
@@ -139,21 +139,21 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         % save residuum, if steps do not make up a frame
         resid = ifft( F .* ( 1 - (Mask>eps) ) );
     end;
-	out  = struct( ...
-        'coeff'			    , FF, ...               % transform coefficients
-        'PSIs'			    , PSIs , ...            % spectra of the windows
-        'psi_hat'		    , psi,	...             % function handle of window in warped Fourier domain
-        'omega'			    , w , ...               % the Fourier domain vector
-        'steps'			    , steps , ...           % used steps in warped domain
-        'sigma'			    , sigma, ...            % function handle of the spectral diffeomorphism
-        'warpFactors'   	, deter, ...            % weighting factors
-        'FourierMask'   	, Mask , ...            % sum of the squared spectra of the windows
-        'residuum'      	, resid,  ...           % residuum (part of the signal which is lost due to missing windows)
-        'reconstruct'   	, @( modus ) [], ...    % function handle for reconstruction
-        'emergingRec'   	, @(t,fig) [], ...      % function handle for plotting an emerging reconstruction
-        'plotFrameogram'	, @( titlestr ) [], ... % function handle for plotting frame-o-gram
-        'plotWindows'   	, @( titlestr ) [] ...  % function handle for plotting the windows
-	);
+    out  = struct( ...
+        'coeff'             , FF, ...               % transform coefficients
+        'PSIs'              , PSIs , ...            % spectra of the windows
+        'psi_hat'           , psi,  ...             % function handle of window in warped Fourier domain
+        'omega'             , w , ...               % the Fourier domain vector
+        'steps'             , steps , ...           % used steps in warped domain
+        'sigma'             , sigma, ...            % function handle of the spectral diffeomorphism
+        'warpFactors'       , deter, ...            % weighting factors
+        'FourierMask'       , Mask , ...            % sum of the squared spectra of the windows
+        'residuum'          , resid,  ...           % residuum (part of the signal which is lost due to missing windows)
+        'reconstruct'       , @( modus ) [], ...    % function handle for reconstruction
+        'emergingRec'       , @(t,fig) [], ...      % function handle for plotting an emerging reconstruction
+        'plotFrameogram'    , @( titlestr ) [], ... % function handle for plotting frame-o-gram
+        'plotWindows'       , @( titlestr ) [] ...  % function handle for plotting the windows
+    );
     % use "this" structure
     out.emergingRec     = @(t,fig)      plotReconstruction(out,f,t,fig);
     out.plotFrameogram  = @(titlestr)   plotFrameogram(out,titlestr);
@@ -245,24 +245,24 @@ end
 
 %% reconstructs from coefficients
 function [ recf ] = invSigmaTransform1D( C  , dual )
-	% reconstruct, using Frame
-	if(~exist('dual','var'))
+    % reconstruct, using Frame
+    if(~exist('dual','var'))
         disp('reconstructing using frame.');
-        recf = ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) );		
-    else	
+        recf = ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) );        
+    else    
         % reconstruct, using dualFrame
         if( strcmp(dual,'dual') )
             disp('reconstructing using dualframe.');
             recf =  ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) ...
-                 .* StableInverse( C.FourierMask ) );		 
+                 .* StableInverse( C.FourierMask ) );        
         % reconstruct, using dualFrame and "unresolvable" Residuum
         elseif( strcmp(dual,'resid'))
             disp('reconstructing using dualframe and residuum.');
             recf =  ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) ...
-                 .* StableInverse( C.FourierMask ) ) + C.residuum;		
+                 .* StableInverse( C.FourierMask ) ) + C.residuum;      
         else
             disp('reconstructing using frame.');
-            recf = ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) );	
+            recf = ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) );    
         end;
     end;
 end
