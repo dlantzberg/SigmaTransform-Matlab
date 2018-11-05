@@ -1,6 +1,6 @@
 %   Some usage examples for SigmaTransform1D1D
 %
-%	AUTHOR:	D Lantzberg, 2017 - 2018
+%   AUTHOR: D Lantzberg, 2017 - 2018
 
 close all;
 
@@ -9,7 +9,7 @@ close all;
 %%% MAKE DATA %%%
 
 % define diffeomorphism
-sigma	= @(x) x;
+sigma   = @(x) x;
 action  = @(x,xp) x - xp;
 
 % load bat-signal
@@ -102,7 +102,7 @@ batWT = SigmaTransform1D(   ...
 
 % define some function handle for a "named" transform like the "WaveletTransform" ...
 WaveletTransform = @( signal , channels , Fs ) ...
-	SigmaTransform1D( signal , warpedG , channels, @(x) log2(abs(x)+eps) , Fs );
+    SigmaTransform1D( signal , warpedG , channels, @(x) log2(abs(x)+eps) , Fs );
 
 % ... and apply it
 batWT = WaveletTransform(   ... 
@@ -268,7 +268,7 @@ batMisc1 = SigmaTransform1D( ...
     hilbert(bat_signal),                    ... % the signal
     16,                                     ... % the window_width
     400,                                    ... % the number of channels
-    @(x) 2*x + (Fs/26)*sin(2*pi*x/Fs*8),   	... % the diffeomorphism
+    @(x) 2*x + (Fs/26)*sin(2*pi*x/Fs*8),    ... % the diffeomorphism
     Fs                                      ... % the sampling frequency
 );
 
@@ -312,8 +312,8 @@ SomeTransform = @( sig , numchan , Fs ) ...
 
 % Apply...
 batMisc2 = SomeTransform(   ... % ...some transform
-    hilbert(bat_signal),	... % the signal
-    400,                	... % the number of channels
+    hilbert(bat_signal),    ... % the signal
+    400,                    ... % the number of channels
     Fs                      ... % the sampling frequency
 );
 
