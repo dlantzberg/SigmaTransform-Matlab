@@ -70,12 +70,10 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         if( scale == 1 )
             deter       = detinvsigma(w);
             %deter       = bsxfun(@rdivide,detinvsigma(w),detinvsigma(vars));
-            PSIs		=      bsxfun( @times , deter.^.5 , PSIs );
-            PSIFactor	= sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2)  , 2);
+            PSIs	=      bsxfun( @times , deter.^.5 , PSIs );
             Mask        = sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 1);
         else
-            deter		= ones(size(steps(:)));
-            PSIFactor	= ones(size(steps(:)));
+            deter	= ones(size(steps(:)));
             Mask        = sum( abs(PSIs).^2 , 1);
         end;
         
@@ -129,11 +127,9 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         if( scale == 1 )
             deter       = bsxfun(@rdivide,detinvsigma(w),detinvsigma(vars));
             PSIs		=      bsxfun( @times , deter.^.5 , PSIs );
-            %PSIFactor	= sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2)  , 2);
             Mask        = sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 1);
         else
             deter		= eye(size(vars));
-            %PSIFactor	= ones(size(steps(:)));
             Mask        = sum( abs(PSIs).^2 , 1);
         end;
 
