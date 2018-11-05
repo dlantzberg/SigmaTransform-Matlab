@@ -2,13 +2,13 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
 %SigmaTransform1D 1D Continuous SigmaTransform	
 %   USAGE: [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , action, detinvsigma )
 %	INPUT:
-%		f		: sig - or "0", to indicate calculation of windows, only
-%		psi		: waveletfunc, in the warped domain
+%		f	: sig - or "0", to indicate calculation of windows, only
+%		psi	: waveletfunc, in the warped domain
 %		steps	: vector of steps to analyze in warped domain, or numsteps
 %		sigma	: diffeomorphism as a function
-%		wFs		: Samplingfrequency, if known, or FourierAxis
+%		wFs	: Samplingfrequency, if known, or FourierAxis
 %		action	: translation action (optional, uses abelian by default)
-%		detinv..: determinant of jacobian of inverse of diffeomorphism
+%		detinv. : determinant of jacobian of inverse of diffeomorphism
 %	OUTPUT:
 %		out     : struct, containing W_psi f
 %		[PSIs]	: [optional mat of fourier transforms of "scaled wavelets" ]
@@ -129,11 +129,11 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         if( scale == 1 )
             deter       = bsxfun(@rdivide,detinvsigma(w),detinvsigma(vars));
             PSIs		=      bsxfun( @times , deter.^.5 , PSIs );
-            PSIFactor	= sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2)  , 2);
+            %PSIFactor	= sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2)  , 2);
             Mask        = sum( bsxfun( @times , deter.^-1 , abs(PSIs).^2 ) , 1);
         else
             deter		= eye(size(vars));
-            PSIFactor	= ones(size(steps(:)));
+            %PSIFactor	= ones(size(steps(:)));
             Mask        = sum( abs(PSIs).^2 , 1);
         end;
 
@@ -150,13 +150,13 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
         'omega'			, w , ...               % the Fourier domain vector
         'steps'			, steps , ...           % used steps in warped domain
         'sigma'			, sigma, ...            % function handle of the spectral diffeomorphism
-        'warpFactors'   , deter, ...            % weighting factors
-        'FourierMask'   , Mask , ...            % sum of the squared spectra of the windows
-        'residuum'      , resid,  ...           % residuum (part of the signal which is lost due to missing windows)
-        'reconstruct'   , @( modus ) [], ...    % function handle for reconstruction
-        'emergingRec'   , @(t,fig) [], ...      % function handle for plotting an emerging reconstruction
-        'plotFrameogram', @( titlestr ) [], ... % function handle for plotting frame-o-gram
-        'plotWindows'   , @( titlestr ) [] ...  % function handle for plotting the windows
+        'warpFactors'   	, deter, ...            % weighting factors
+        'FourierMask'   	, Mask , ...            % sum of the squared spectra of the windows
+        'residuum'      	, resid,  ...           % residuum (part of the signal which is lost due to missing windows)
+        'reconstruct'   	, @( modus ) [], ...    % function handle for reconstruction
+        'emergingRec'   	, @(t,fig) [], ...      % function handle for plotting an emerging reconstruction
+        'plotFrameogram'	, @( titlestr ) [], ... % function handle for plotting frame-o-gram
+        'plotWindows'   	, @( titlestr ) [] ...  % function handle for plotting the windows
 	);
     % use "this" structure
     out.emergingRec     = @(t,fig)      plotReconstruction(out,f,t,fig);
