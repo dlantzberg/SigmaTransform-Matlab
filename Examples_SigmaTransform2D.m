@@ -1,6 +1,6 @@
 %   Some usage examples for SigmaFuncT
 %
-%	AUTHOR:	D Lantzberg, 2017 - 2018
+%   AUTHOR: D Lantzberg, 2017 - 2018
 
 close all;
 
@@ -42,13 +42,13 @@ Lena2DSTFT = SigmaTransform2D(  ...
 
 % define some function handle for a "named" transform like the "STFT2D" ...
 STFT2D = @( signal , Xchannels, Ychannels , Wx, Wy ) ...
-	SigmaTransform2D( signal , win , Xchannels, Ychannels , ...
+    SigmaTransform2D( signal , win , Xchannels, Ychannels , ...
                       @(x,y) x, @(x,y) y, Wx , Wy );
 
 % ... and apply it
 Lena2DSTFT = STFT2D(        ...
     Lena ,                  ... % the image
-    Xstep(:), Ystep(:) ,    ...	% the channels
+    Xstep(:), Ystep(:) ,    ... % the channels
     WX,  WY                 ... % the Fourier-domain
 );
 
@@ -70,7 +70,7 @@ pause;
 sigmaX = @(x,y) log2(abs(x)+eps);
 sigmaY = @(x,y) log2(abs(y)+eps);
 
-%actX     = @(x,y,xp,yp)	x - xp;
+%actX     = @(x,y,xp,yp)    x - xp;
 %actY     = @(x,y,xp,yp) y - yp;
 
 % load image of lena
@@ -110,7 +110,7 @@ pause;
 imagesc( real(recLena2DWT )), axis ij; grid off, axis off;
 title('Reconstruction, using dual frame and residuum');
 pause;
-		  
+          
 %% (nonParabolic) SIM(2)-Let, Lena 128x128, rectangular window
 sigmaX   = @(x,y) log2(x.^2+y.^2 + eps)/2;
 sigmaY   = @(x,y) atan(y./x);
@@ -148,13 +148,13 @@ LenaSIM2T = SigmaTransform2D(  ...
 
 % define some function handle for a "named" transform like the "SIM2Transform" ...
 SIM2Transform = @( signal , Xchannels, Ychannels , Wx, Wy ) ...
-	SigmaTransform2D( signal , win , Xchannels, Ychannels , ...
+    SigmaTransform2D( signal , win , Xchannels, Ychannels , ...
                       sigmaX, sigmaY, Wx , Wy );
 
 % ... and apply it
 LenaSIM2T = SIM2Transform(        ...
     Lena ,                  ... % the image
-    Xstep(:), Ystep(:) ,    ...	% the channels
+    Xstep(:), Ystep(:) ,    ... % the channels
     WX,  WY                 ... % the Fourier-domain
 );
 
@@ -173,8 +173,8 @@ title('Reconstruction, using dual frame and residuum');
 pause;
 
 %% 2D-NonParabolic SHEAR, Lena 128x128, rectangular window
-sigmaX	= @(x,y) log2(abs(x)+eps);
-sigmaY	= @(x,y) y./x;
+sigmaX  = @(x,y) log2(abs(x)+eps);
+sigmaY  = @(x,y) y./x;
 
 %actX    = @(x,y,xp,yp) x - xp;
 %actY    = @(x,y,xp,yp) y - yp ;
@@ -221,7 +221,7 @@ sigmaX = @(x,y) log2(x.^2+y.^2+eps)/2;
 sigmaY = @(x,y) atan(y./x);
 %detSIGMA = @(x,y) exp(-2.*x);
 
-actX    = @(x,y,xp,yp)				  x - xp;
+actX    = @(x,y,xp,yp)                x - xp;
 actY    = @(x,y,xp,yp) 2.^(-xp*.5) .*( y - yp );
 
 % load image of lena
@@ -265,10 +265,10 @@ title('Reconstruction, using dual frame and residuum');
 pause;
 
 %% 2D-SHEAR, Lena 128x128, rectangular window
-sigmaX	= @(x,y) log2(abs(x) + eps);
-sigmaY	= @(x,y) y./x;
+sigmaX  = @(x,y) log2(abs(x) + eps);
+sigmaY  = @(x,y) y./x;
 
-actX    = @(x,y,xp,yp)				  x - xp;
+actX    = @(x,y,xp,yp)                x - xp;
 actY    = @(x,y,xp,yp) 2.^(-xp/2) .*( y - yp );
 
 % load image of lena
