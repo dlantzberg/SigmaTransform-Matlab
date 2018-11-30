@@ -1,5 +1,5 @@
 function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX , sigmaY , wFsx , wFsy, actX, actY , detinvsigma )
-%SigmaTransform2D 2D Continuous SigmaTransform, 
+%SigmaTransform2D 2D Continuous SigmaTransform,
 %   USAGE: [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX , sigmaY , wFsx , wFsy, actX, actY , detinvsigma )
 %   INPUT:
 %       f           : sig
@@ -17,13 +17,13 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
 
     % config
     lensteps = length( Xsteps );
-    
+
     if( lensteps ~= length(Ysteps) ),
         error('Stepvectors have different length');
     end;
-    
+
     [height,width] = size( f );
-    
+
     % Fourier domain provided or shall it be created?
     if(~exist('wFsx','var') || ~exist('wFsy','var') )
         wFsx = width;
@@ -64,10 +64,10 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
     if~exist('detinvsigma','var')
         scale = 0;
         detinvsigma = @(x,y) 1;
-    else 
+    else
         scale = 1;
     end;
-    
+
     % if no action given -> use abelian structure
     if~exist('actX','var')
         actX = @(x,y,xp,yp) x - xp;
@@ -75,15 +75,15 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
     if~exist('actY','var')
         actY = @(x,y,xp,yp) y - yp;
     end;
-        
+
     % get spectrum of signal
     f( isnan(f) )   = 0;
     F               = fft2( f );
-        
+
     % diffeomorph Fourierdomain
     sigmaWX     = sigmaX(WX,WY); sigmaWX = repmat(sigmaWX,[1,1,lensteps]);
     sigmaWY     = sigmaY(WX,WY); sigmaWY = repmat(sigmaWY,[1,1,lensteps]);
-    
+
     % make steps
     Xsteps      = reshape(Xsteps,1,1,lensteps);
     Ysteps      = reshape(Ysteps,1,1,lensteps);
@@ -93,10 +93,10 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
     % evaluate window
     PSIs = psi( actX( sigmaWX, sigmaWY, sigmaXSteps , sigmaYSteps ) , ...
                 actY( sigmaWX, sigmaWY, sigmaXSteps , sigmaYSteps ) );
-    
+
     % handle NaNs
     PSIs(isnan(PSIs)) = 0;
-    
+
     % Very Slow
     if( scale == 1 ),
         deter           = detinvsigma(2-Xsteps , 2-Ysteps )./detinvsigma(2,2);
@@ -106,13 +106,13 @@ function [ out , PSIs ] = SigmaTransform2D( f , psi , Xsteps , Ysteps , sigmaX ,
         deter           = ones(size(Xsteps));
         Mask            = sum( abs(PSIs).^2 , 3 );
     end;
-    
+
     % transform
     coeff = ifft2( bsxfun( @times, F , conj(PSIs) ) );
-    
+
     % save residuum, if steps do not make up a frame
     resid = ifft2( F .* ( 1 - (Mask>eps) ) );
-    
+
     % save and return stuff
     out = struct( ...
         'coeff'         , coeff  , ...      % transform coefficients
@@ -155,30 +155,30 @@ function t = plotReconstruction( c , t , fig )
     emergFourier  = subplot(122);
     title('Emerging Fourier Plane','parent', emergFourier );
     axis image;
-    xlabel('Wavenumber k_x \rightarrow','parent', emergFourier ); 
-    ylabel('Wavenumber k_y \rightarrow','parent', emergFourier ); 
+    xlabel('Wavenumber k_x \rightarrow','parent', emergFourier );
+    ylabel('Wavenumber k_y \rightarrow','parent', emergFourier );
     set(gca,'NextPlot','replacechildren') ;
     shg;
     for k = 1 : 1 : length( c.steps_x(:) ),% : -1 : 1,
         % update images
         curr = c.PSIs(:,:,k);
         EmergingImage   = EmergingImage   + ifft2(fft2(c.coeff(:,:,k)).*curr);
-        
+
         curr = fftshift(curr).^2;
         EmergingFourier = EmergingFourier + curr;
-        
+
         % show updated images
-        imagesc( abs(EmergingImage), 'parent', emergImage ), 
-        imagesc( c.omega_x(1,:), c.omega_y(:,1), EmergingFourier + curr,'parent',emergFourier ), 
-        
+        imagesc( abs(EmergingImage), 'parent', emergImage ),
+        imagesc( c.omega_x(1,:), c.omega_y(:,1), EmergingFourier + curr,'parent',emergFourier ),
+
         % sleep for "t" seconds
-        pause( t ); 
-    end; 
+        pause( t );
+    end;
 end
 
 %% inverse sigma transform
 function [ recf ] = invSigmaTransform2D( C , dual )
-%invSigmaTransform2D INVERSE Continuous 2D-sigmaTransform,  
+%invSigmaTransform2D INVERSE Continuous 2D-sigmaTransform,
 
     % reconstruct, using Frame
     if~exist('dual','var')
@@ -197,7 +197,7 @@ function [ recf ] = invSigmaTransform2D( C , dual )
         else
             disp('reconstructing using frame.');
             recf = ifft2( sum( bsxfun( @times, fft2( C.coeff ) .* C.PSIs, C.warpFactors.^-1 ) , 3 ) );
-        end 
+        end
     end
 end
 

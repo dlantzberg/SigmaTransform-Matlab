@@ -9,8 +9,8 @@ function [y,Fs] = bat()
 %
 %	AUTHOR:	Daniel Lantzberg, Nov. 2017
 %
-%   Acknowledgement: The author wishes to thank Curtis Condon, Ken White, and Al Feng 
-%   of the Beckman Institute of the University of Illinois for the bat data and 
+%   Acknowledgement: The author wishes to thank Curtis Condon, Ken White, and Al Feng
+%   of the Beckman Institute of the University of Illinois for the bat data and
 %   for permission to use it in this example
 %   http://dsp.rice.edu:80/software/bat-echolocation-chirp
 

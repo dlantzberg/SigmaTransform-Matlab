@@ -1,4 +1,4 @@
-%   Some usage examples for SigmaTransform1D1D
+%   Some usage examples for SigmaTransform1D()
 %
 %   AUTHOR: D Lantzberg, 2017 - 2018
 
@@ -17,7 +17,7 @@ action  = @(x,xp) x - xp;
 
 % 400 linear spaced sampling points in warped domain
 % steps = linspace( sigma(min_freq) , sigma(max_freq) , num_steps );
-num_steps = 400; 
+num_steps = 400;
 domwidth = Fs;
 
 % width of the window
@@ -33,7 +33,7 @@ batSTFT = SigmaTransform1D( ...
     num_steps,  ... % the number of channels
     sigma,      ... % the diffeomorphism
     Fs,         ... % the sampling frequency
-    action      ... % the "group action" (optional) 
+    action      ... % the "group action" (optional)
 );
 
 % save reconstruction
@@ -77,7 +77,7 @@ action  = @(x,xp) x - xp;
 [bat_signal,Fs] = bat();
 
 % 400 linear spaced sampling points in warped domain
-num_steps = 400; 
+num_steps = 400;
 chan = linspace( sigma(Fs*0.005) , sigma(Fs/2*1.1) , num_steps );
 domwidth = chan(end) - chan(1);
 
@@ -94,7 +94,7 @@ batWT = SigmaTransform1D(   ...
     chan,                   ... % the channels
     sigma,                  ... % the diffeomorphism
     Fs,                     ... % the sampling frequency
-    action                  ... % the "group action" (optional) 
+    action                  ... % the "group action" (optional)
 );
 
 
@@ -105,7 +105,7 @@ WaveletTransform = @( signal , channels , Fs ) ...
     SigmaTransform1D( signal , warpedG , channels, @(x) log2(abs(x)+eps) , Fs );
 
 % ... and apply it
-batWT = WaveletTransform(   ... 
+batWT = WaveletTransform(   ...
     hilbert(bat_signal),    ... % the signal
     chan,                   ... % the channels
     Fs                      ... % the sampling frequency
@@ -154,7 +154,7 @@ action  = @(x,xp) x - xp;
 [bat_signal,Fs] = bat();
 
 % 400 linear spaced sampling points in warped domain
-num_steps = 400; 
+num_steps = 400;
 chan = linspace( sigma(Fs*0.01) , sigma(Fs/2*1.1) , num_steps );
 
 % the transform
@@ -164,7 +164,7 @@ batCQ = SigmaTransform1D( ...
     chan,                   ... % the channels
     sigma,                  ... % the diffeomorphism
     Fs,                     ... % the sampling frequency
-    action                  ... % the "group action" (optional) 
+    action                  ... % the "group action" (optional)
 );
 
 % save reconstruction
@@ -209,7 +209,7 @@ action  = @(x,xp) x - xp;
 [bat_signal,Fs] = bat();
 
 % 400 linear spaced sampling points in warped domain
-num_steps = 400; 
+num_steps = 400;
 chan = linspace( sigma(Fs*0.01) , sigma(Fs/2*1.1) , num_steps );
 domwidth = chan(end) - chan(1);
 
@@ -226,7 +226,7 @@ batERB = SigmaTransform1D( ...
     chan,                   ... % the channels
     sigma,                  ... % the diffeomorphism
     Fs,                     ... % the sampling frequency
-    action                  ... % the "group action" (optional) 
+    action                  ... % the "group action" (optional)
 );
 
 % save reconstruction
@@ -279,11 +279,11 @@ recbatMisc1 = batMisc1.reconstruct( 'resid' );
 
 figure(1),shg;
 % plot coeffs
-subplot(121); 
+subplot(121);
 batMisc1.plotFrameogram('Frameogram for \sigma_!');
 
 % plot Windows
-subplot(122); 
+subplot(122);
 batMisc1.plotWindows('Windows in Fourier domain and diffeomorphism (dashed) for \sigma_1');
 pause;
 
@@ -324,11 +324,11 @@ recbatMisc2 = batMisc2.reconstruct('dual');
 
 figure(1),shg;
 % plot coeffs
-subplot(121); 
+subplot(121);
 batMisc2.plotFrameogram('Frameogram for \sigma_"');
 
 % plot Windows
-subplot(122); 
+subplot(122);
 batMisc2.plotWindows('Windows in Fourier domain and diffeomorphism (dashed) for \sigma_2');
 pause;
 

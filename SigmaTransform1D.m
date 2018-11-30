@@ -1,5 +1,5 @@
 function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , action , detinvsigma )
-%SigmaTransform1D 1D Continuous SigmaTransform  
+%SigmaTransform1D 1D Continuous SigmaTransform
 %   USAGE: [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , action, detinvsigma )
 %   INPUT:
 %       f       : sig - or "0", to indicate calculation of windows, only
@@ -18,20 +18,20 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
     % config
     lensteps    = length( steps );
     lenf        = length( f );
-    
+
     % ERRORCHECKING
     if~exist('detinvsigma','var')
         scale = 0;
         detinvsigma = @(x) 1;
-    else 
+    else
         scale = 1;
     end;
-    
+
     if~exist('wFs' , 'var')
         %warning('no axis given - using axis -1:1');
         wFs = lenf/2;
     end;
-        
+
     if~exist('action','var')
         % if no action given -> use abelian structure
         %warning('no action given - using abelian action');
@@ -39,32 +39,32 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
     end;
 
     % signal given?
-    if( lenf == 1 ) % get PSIs only         
-        
+    if( lenf == 1 ) % get PSIs only
+
         if( length(wFs) == 1 )
             error('without signal, axis is needed');
         end;
 
-        w       = reshape( wFs    , 1  , [] );  
+        w       = reshape( wFs    , 1  , [] );
         sigmaw  = sigma(w);
 
         % number of sample-points
-        if( lensteps == 1 ) 
+        if( lensteps == 1 )
             lensteps = steps;
             steps = linspace( min(sigmaw) , max(sigmaw) , lensteps );
-        end;    
-        steps   = reshape( steps , [] , 1  );   
-        
+        end;
+        steps   = reshape( steps , [] , 1  );
+
         if(~isa(psi,'function_handle') )
             % if no function handle is given: use warped Gaussian of
             % "width psi"
             width = psi;
             psi = @(x)  exp(  -pi * ( x/width * (lensteps/(steps(end)-steps(1)))  ).^2 );
         end;
-        
+
         vars    = bsxfun( action , sigmaw , steps );
-        PSIs    = psi( vars );    
-        PSIs(isnan(PSIs)) = 0;    
+        PSIs    = psi( vars );
+        PSIs(isnan(PSIs)) = 0;
 
         %scaling? -> takes time
         if( scale == 1 )
@@ -76,7 +76,7 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
             deter   = ones(size(steps(:)));
             Mask    = sum( abs(PSIs).^2 , 1);
         end;
-        
+
         % irrelevant
         FF = 0;
         resid = 0;
@@ -91,35 +91,35 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
 
         % handle nans
         f(isnan(f)) = 0;
-        
+
         % make axes
-        w       = reshape( wFs    , 1  , [] );  
+        w       = reshape( wFs    , 1  , [] );
         sigmaw  = sigma(w);
         % make infinity huge, but finite
         sigmaw( isinf(sigmaw) ) = .01/eps;
 
         % number of sample-points
-        if( lensteps == 1 ) 
+        if( lensteps == 1 )
             lensteps = steps;
             steps    = linspace( min(sigmaw) , max(sigmaw) , lensteps-4 );
             stepsize = steps(2)-steps(1);
             steps    = [ steps(1)-stepsize*2, steps(1)-stepsize , steps , ...
                          steps(end)+stepsize , steps(end)+stepsize*2 ];
-        end;        
-        steps   = reshape( steps , [] , 1  );   
-        
+        end;
+        steps   = reshape( steps , [] , 1  );
+
         if(~isa(psi,'function_handle') )
             % if no function handle is given: use warped Gaussian of
             % "width psi"
             width = psi;
             psi = @(x)  exp(  -pi * ( x/width * (lensteps/(steps(end)-steps(1)))  ).^2 );
         end;
-        
+
         % make windows
-        vars    = bsxfun( action , sigmaw , steps );        
-        PSIs    = psi( vars );    
-        PSIs(isnan(PSIs)) = 0;  
-        
+        vars    = bsxfun( action , sigmaw , steps );
+        PSIs    = psi( vars );
+        PSIs(isnan(PSIs)) = 0;
+
         % get spectrum of signal
         F     = reshape( fft( f ) , 1 , [] );
 
@@ -135,7 +135,7 @@ function [ out , PSIs ] = SigmaTransform1D( f , psi , steps , sigma , wFs , acti
 
         % transform
         FF = ifft( bsxfun( @times , F , conj(PSIs) ) , [] , 2 );
-        
+
         % save residuum, if steps do not make up a frame
         resid = ifft( F .* ( 1 - (Mask>eps) ) );
     end;
@@ -171,7 +171,7 @@ function [] = plotReconstruction( c , f , t , fig )
         % default to figure 1
         fig = 1;
     end;
-    
+
     % setup
     x = freq2time( ifftshift(c.omega) );
     w = fftshift(c.omega);
@@ -179,48 +179,48 @@ function [] = plotReconstruction( c , f , t , fig )
     EmergingFourier = 0;
     figure(fig);shg;
     pause(.1);
-    
+
     emergSignal  = subplot(211); pause(.01);
     plot( x , norm1(real(EmergingSignal),inf) ); axis tight; plotaxis;
     axis( [ x(1), x(end) , -1 , 1 ] );
     title('Emerging Reconstruction, using frame in blue; original in dashed-red','parent', emergSignal );grid on;
-    xlabel('time t \rightarrow','parent', emergSignal ); 
+    xlabel('time t \rightarrow','parent', emergSignal );
     ylabel('f','parent', emergSignal );
     plotaxis; set(gca,'NextPlot','replacechildren') ;
     pause(.1);
-    
+
     emergFourier = subplot(212); pause(.01);
     plot( w , norm1(fftshift(EmergingFourier),inf), 'k' ); axis tight;  plotaxis;
     axis( [ w(1), w(end) , 0 , 1 ] );
     title('Emerging Fourier Axis','parent', emergFourier ); grid on;
-    xlabel('Freq \omega \rightarrow','parent', emergFourier ); 
+    xlabel('Freq \omega \rightarrow','parent', emergFourier );
     ylabel('|SPEC(\psi)|^2','parent', emergFourier );
     set(gca,'NextPlot','replacechildren') ;
     pause(.1);
-    
+
 
     for k = length( c.steps ) : -1 : 1,
         % update images
         curr = c.PSIs(k,:);
         EmergingSignal  = EmergingSignal  + ifft(fft(c.coeff(k,:)).*curr);
         EmergingFourier = EmergingFourier + curr.^2;
-        
+
         % show updated plots
         plot( x , norm1(real(EmergingSignal),inf), ...
               x , norm1(real(f),inf), 'r--','parent', emergSignal, 'LineWidth', 1  );
-        
+
         plot( w, norm1(fftshift(EmergingFourier),inf), 'k' , ...
               w, norm1(fftshift(curr),inf), 'r--' , 'parent', emergFourier, 'LineWidth',1 );
-        
+
         % sleep for "t" seconds
-        pause( t ); 
-    end; 
+        pause( t );
+    end;
 end
 
 %% Plots the Frameogram
 function [] = plotFrameogram( c , titlestr )
     imagesc( freq2time( ifftshift(c.omega) ) , c.steps , abs( c.coeff ).^2 )
-    %axis square, 
+    %axis square,
     axis xy,axis tight,plotaxis(0),colormap jet;
     xlabel('t \rightarrow');
     ylabel('\sigma(\omega) \rightarrow');
@@ -231,7 +231,7 @@ end
 %% Plots the windows
 function [] = plotWindows( c , titlestr )
     imagesc( ifftshift(c.omega) , c.steps , fftshift(abs( c.PSIs ),2) )
-    %axis square, 
+    %axis square,
     axis xy,axis tight,plotaxis(0),colormap jet;
     xlabel('\omega \rightarrow');
     ylabel('\sigma(\omega) \rightarrow');
@@ -248,21 +248,21 @@ function [ recf ] = invSigmaTransform1D( C  , dual )
     % reconstruct, using Frame
     if(~exist('dual','var'))
         disp('reconstructing using frame.');
-        recf = ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) );        
-    else    
+        recf = ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) );
+    else
         % reconstruct, using dualFrame
         if( strcmp(dual,'dual') )
             disp('reconstructing using dualframe.');
             recf =  ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) ...
-                 .* StableInverse( C.FourierMask ) );        
+                 .* StableInverse( C.FourierMask ) );
         % reconstruct, using dualFrame and "unresolvable" Residuum
         elseif( strcmp(dual,'resid'))
             disp('reconstructing using dualframe and residuum.');
             recf =  ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) ...
-                 .* StableInverse( C.FourierMask ) ) + C.residuum;      
+                 .* StableInverse( C.FourierMask ) ) + C.residuum;
         else
             disp('reconstructing using frame.');
-            recf = ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) );    
+            recf = ifft( sum(C.warpFactors^-1 * ( fft(C.coeff,[],2) .* C.PSIs ) , 1 ) );
         end;
     end;
 end

@@ -7,7 +7,7 @@ function [  ] = reax( hor, ver )
 %	OUTPUT:
 %
 %	AUTHOR:	D Lantzberg, Jan. 2014
-    
+
     if~exist('hor')
         hor = 10;
     end;
@@ -16,14 +16,13 @@ function [  ] = reax( hor, ver )
     end;
     hor = hor/100/2;
     ver = ver/100/2;
-    ax = axis; 
+    ax = axis;
     deltah = ax(2) - ax(1);
     deltav = ax(4) - ax(3);
-    ax(1) = ax(1) - deltah*hor; 
-    ax(2) = ax(2) + deltah*hor; 
+    ax(1) = ax(1) - deltah*hor;
+    ax(2) = ax(2) + deltah*hor;
     ax(3) = ax(3) - deltav*ver;
-    ax(4) = ax(4) + deltav*ver; 
+    ax(4) = ax(4) + deltav*ver;
     axis(ax);
 
 end
-

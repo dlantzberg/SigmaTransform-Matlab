@@ -9,7 +9,7 @@ function [ x ] = FourierAxis( fs , n )
 %
 %	AUTHOR:	Daniel Lantzberg, Okt. 2016
 
-    x = linspace( 0 , fs , n ); 
+    x = linspace( 0 , fs , n );
     x(1+ceil(n/2):end) = x(1+ceil(n/2):end) - fs - x(2);
 
 end

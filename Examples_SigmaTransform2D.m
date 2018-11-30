@@ -1,4 +1,4 @@
-%   Some usage examples for SigmaFuncT
+%   Some usage examples for SigmaTransform2D()
 %
 %   AUTHOR: D Lantzberg, 2017 - 2018
 
@@ -84,7 +84,7 @@ WX = fftshift(WX); WY = fftshift(WY);
 
 % define rectangular window ( of "width" 1x1 )
 win = @(X,Y)   (X <= 1 ) .* ( X > 0 ) ...
-            .* (Y <= 1 ) .* ( Y > 0 );  
+            .* (Y <= 1 ) .* ( Y > 0 );
 
 % make channels
 [Xstep,Ystep] = meshgrid(   linspace(log2(1) , log2(32) , 6 ),...
@@ -110,7 +110,7 @@ pause;
 imagesc( real(recLena2DWT )), axis ij; grid off, axis off;
 title('Reconstruction, using dual frame and residuum');
 pause;
-          
+
 %% (nonParabolic) SIM(2)-Let, Lena 128x128, rectangular window
 sigmaX   = @(x,y) log2(x.^2+y.^2 + eps)/2;
 sigmaY   = @(x,y) atan(y./x);
@@ -129,7 +129,7 @@ WX = fftshift(WX); WY = fftshift(WY);
 
 % define rectangular window (of "width" 1 x (pi/16) )
 win = @(X,Y)   (Y < 2*pi/32 ) .* ( Y >= 0) ...
-            .* ( X > 0 ) .* ( X <= 1);  
+            .* ( X > 0 ) .* ( X <= 1);
 
 % make channels
 [Xstep,Ystep] = meshgrid(   log2(1) : 1 : log2(64) , ...
@@ -190,7 +190,7 @@ WX = fftshift(WX); WY = fftshift(WY);
 
 % define rectangular window  (of "width" 2 x 1 )
 win = @(X,Y)   ( Y <= 1/2) .* ( Y > -1/2) ...
-            .* ( X >   0 ) .* ( X <=  2 );  
+            .* ( X >   0 ) .* ( X <=  2 );
 
 % make channels
 [Xstep,Ystep] = meshgrid( (0: 2 : 8) , -4 : 1 : 4 );
@@ -235,7 +235,7 @@ WX = fftshift(WX); WY = fftshift(WY);
 
 % define rectangular window (of "width" 2 x (pi/32) )
 win = @(X,Y)   ( Y >= 0 ) .* ( Y <  2*pi/64 ) ...
-            .* ( X >  0 ) .* ( X <= 2 );  
+            .* ( X >  0 ) .* ( X <= 2 );
 
 % make channels
 [Xstep,Ystep] = meshgrid( ( 0 : 2 : 6 ) , pi/2*(-1:1/16:1) );
@@ -282,17 +282,14 @@ WX = fftshift(WX); WY = fftshift(WY);
 
 % define rectangular window  (of "width" 2 x 1 )
 win = @(X,Y)   ( Y <= 1/2) .* ( Y > -1/2) ...
-            .* ( X >   0 ) .* ( X <=  2 );  
+            .* ( X >   0 ) .* ( X <=  2 );
 
 % make channels
  xstep = (0: 2 : 4);
  Xstep = []; Ystep = [];
- for k = 1 : length(xstep), 
+ for k = 1 : length(xstep),
      ystep = -2*2.^(xstep(k)/2) : 1 : 2*2.^(xstep(k)/2);
-     %ystep = -16*2.^(xstep(k)/2) : 1 : 16*2.^(xstep(k)/2);
-         
-     n = length( ystep );
-     Xstep = [ Xstep ; repmat( xstep(k) , [ n , 1 ] ) ];
+     Xstep = [ Xstep ; repmat( xstep(k) , [ length( ystep ) , 1 ] ) ];
      Ystep = [ Ystep ; ystep(:) ];
  end;
 % adjust step-width to parabolic scaling

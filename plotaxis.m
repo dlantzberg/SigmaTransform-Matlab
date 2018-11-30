@@ -7,7 +7,7 @@ function [  ] = plotaxis( n,cola,LineWidth )
 %	OUTPUT:
 %
 %	AUTHOR:	D Lantzberg, Jan. 2014
-    
+
 	if~exist('LineWidth')
 		LineWidth = 1;
 	end;
@@ -15,7 +15,7 @@ function [  ] = plotaxis( n,cola,LineWidth )
 	if~exist('cola')
 		cola = 'k';
 	end;
-	
+
 	if~exist('n')
 		n = 5;
 	end;
@@ -30,4 +30,3 @@ function [  ] = plotaxis( n,cola,LineWidth )
     hold off;
     reax(n,n);
 end
-
