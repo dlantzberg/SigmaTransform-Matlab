@@ -2,6 +2,14 @@
 %
 %   AUTHOR: D Lantzberg, 2017 - 2018
 
+% is this octave or matlab?
+if(exist('OCTAVE_VERSION', 'builtin'))
+    disp('Octave detected, trying to load image package ..'); 
+    disp('.. if it is not installed, you may do so with: ');
+    disp('    pkg install image -forge');
+    pkg load image;
+end;
+
 close all;
 
 %% 2D-STFT, Lena 128x128, rectangular window

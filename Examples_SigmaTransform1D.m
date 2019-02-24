@@ -2,6 +2,14 @@
 %
 %   AUTHOR: D Lantzberg, 2017 - 2018
 
+% is this octave or matlab?
+if(exist('OCTAVE_VERSION', 'builtin'))
+    disp('Octave detected, trying to load signal package ..'); 
+    disp('.. if it is not installed, you may do so with: ');
+    disp('    pkg install signal -forge');
+    pkg load signal;
+end;
+
 close all;
 
 %% 1D STFT; Bat-Signal, Warped Gaussian window
